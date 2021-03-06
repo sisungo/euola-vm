@@ -1,0 +1,11 @@
+[target.'cfg(target_env = "musl")']
+rustflags = ["-C", "target-feature=-crt-static"]
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+
+[profile.dev]
+opt-level = 1
+lto = "thin"
+overflow-checks = false

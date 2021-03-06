@@ -1,0 +1,210 @@
+//!
+//! Threading module of `libraw`. This also provides syncing utilities.
+//!
+
+use crate::{
+    context::{putnfp, ExecUnit, Thread},
+    libraw::iohmgr::{self, RawObject},
+    vmem::Var,
+};
+use anyhow::anyhow;
+use dashmap::DashMap;
+use once_cell::sync::Lazy;
+use std::thread::{current, ThreadId};
+
+#[allow(clippy::type_complexity)]
+static TLSMAP: Lazy<
+    DashMap<ThreadId, DashMap<Box<str>, Var, ahash::RandomState>, ahash::RandomState>,
+> = Lazy::new(DashMap::default);
+
+/// Set a TLS.
+pub fn tls_set(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let key = unsafe { a.get_unchecked(0) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let key = key.borrow()?;
+    let val = unsafe { a.get_unchecked(1) }.to_owned();
+    match TLSMAP.get(&current().id()) {
+        Some(x) => {
+            x.insert(Box::from(&key[..]), val);
+        }
+        None => {
+            TLSMAP.insert(current().id(), DashMap::default());
+            match TLSMAP.get(&current().id()) {
+                Some(y) => {
+                    y.insert(Box::from(&key[..]), val);
+                }
+                None => unsafe { std::hint::unreachable_unchecked() },
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Get a TLS.
+pub fn tls_get(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let name = unsafe { a.get_unchecked(0) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let name = name.borrow()?;
+    match TLSMAP.get(&current().id()) {
+        Some(x) => match x.get(&name[..]) {
+            Some(y) => {
+                *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(1);
+                *(unsafe { a.get_unchecked_mut(1) }) = y.to_owned();
+            }
+            None => {
+                *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(0);
+            }
+        },
+        None => {
+            TLSMAP.insert(current().id(), DashMap::default());
+            *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(0);
+        }
+    }
+    Ok(())
+}
+
+/// Remove a TLS.
+pub fn tls_del(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let name = unsafe { a.get_unchecked(0) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let name = name.borrow()?;
+    if let Some(x) = TLSMAP.get(&current().id()) {
+        x.remove(&name[..]);
+    }
+    Ok(())
+}
+
+/// Close this thread's TLS.
+pub fn tls_free(_: &mut [Var]) -> Result<(), anyhow::Error> {
+    TLSMAP.remove(&current().id());
+    Ok(())
+}
+
+/// Spawn a thread.
+pub fn spawn(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    use crate::{context::getfp, executor::start, isa::FuncPtr};
+
+    let fp = unsafe { a.get_unchecked(0) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let fp = fp.borrow()?;
+    let args = match unsafe { a.get_unchecked(1) } {
+        Var::Vector(x) => x.borrow()?,
+        _ => return Err(anyhow!("raw::fatal::not_a_buf")),
+    };
+    let mut new_thread = Thread::new(
+        match match getfp(&fp) {
+            Some(x) => x,
+            None => return Err(anyhow!("raw::fatal::segfault")),
+        } {
+            FuncPtr::Virtual(x) => x,
+            _ => return Err(anyhow!("raw::fatal::segfault")),
+        },
+    );
+    if args.len() > 50 {
+        return Err(anyhow!("raw::fatal::segfault"));
+    }
+    for i in 0..args.len() {
+        if new_thread
+            .sset(100 + i, unsafe { args.get_unchecked(i).to_owned() })
+            .is_err()
+        {
+            unsafe { std::hint::unreachable_unchecked() }
+        }
+    }
+    let builder = std::thread::Builder::new().name("<euolaVM User Thread>".to_owned());
+    drop(args);
+    match builder.spawn(move || {
+        start(new_thread);
+    }) {
+        Ok(x) => {
+            *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(1);
+            *(unsafe { a.get_unchecked_mut(1) }) = Var::U64(iohmgr::add(RawObject::Thread(x)))
+        }
+        Err(_) => *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(0),
+    }
+    Ok(())
+}
+
+/// Join a thread.
+pub fn join(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let id = unsafe { a.get_unchecked(0) }
+        .as_u64_strict()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    let handle = iohmgr::take(id);
+    match match handle {
+        Some(x) => x,
+        None => return Ok(()),
+    } {
+        RawObject::Thread(x) => {
+            x.join().unwrap();
+        }
+        _ => return Err(anyhow!("raw::fatal::segfault")),
+    }
+    Ok(())
+}
+
+/// Sleep this thread.
+pub fn msleep(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let time = unsafe { a.get_unchecked(0) }
+        .as_u64()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    std::thread::sleep(std::time::Duration::from_millis(time));
+    Ok(())
+}
+
+/// Sleep this thread.
+pub fn sleep(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let time = unsafe { a.get_unchecked(0) }
+        .as_u64()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    std::thread::sleep(std::time::Duration::from_secs(time));
+    Ok(())
+}
+
+/// Sleep nano.
+pub fn nsleep(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let time = unsafe { a.get_unchecked(0) }
+        .as_u64()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    std::thread::sleep(std::time::Duration::from_nanos(time));
+    Ok(())
+}
+
+/// Yield this thread.
+pub fn yield_now(_: &mut [Var]) -> Result<(), anyhow::Error> {
+    std::thread::yield_now();
+    Ok(())
+}
+
+/// Count CPUs.
+pub fn cpu_count(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::U64(num_cpus::get_physical() as u64);
+    Ok(())
+}
+
+/// Count threads.
+pub fn par_count(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::U64(num_cpus::get() as u64);
+    Ok(())
+}
+
+/// Initialize the library.
+#[inline(always)]
+pub fn init() {
+    putnfp("raw::thread::tls_get", tls_get);
+    putnfp("raw::thread::tls_set", tls_set);
+    putnfp("raw::thread::tls_remove", tls_del);
+    putnfp("raw::thread::tls_clear", tls_free);
+    putnfp("raw::thread::spawn", spawn);
+    putnfp("raw::thread::join", join);
+    putnfp("raw::thread::sleep<msec>", msleep);
+    putnfp("raw::thread::sleep<nsec>", nsleep);
+    putnfp("raw::thread::sleep<sec>", sleep);
+    putnfp("raw::thread::yield", yield_now);
+    putnfp("raw::thread::par_count", par_count);
+    putnfp("raw::thread::cpu_count", cpu_count);
+}
