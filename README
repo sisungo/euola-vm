@@ -1,5 +1,8 @@
                         euolaVM README
-                Version 0.1, January 29th, 2021
+                Version 0.5, January 29th, 2021
 
 euolaVM is a general purpose abstract machine. euolaVM is portable,
 safety, and strives to be fast and extendable.
+
+euolaVM is also powerful. Many powerful features such as coroutines
+and C-FFI are supported by euolaVM.
