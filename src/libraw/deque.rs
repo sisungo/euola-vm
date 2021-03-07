@@ -324,6 +324,20 @@ pub fn append(a: &mut [Var]) -> Result<(), anyhow::Error> {
     }
 }
 
+/// Content containing test.
+pub fn contains(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let id = unsafe { a.get_unchecked(0) }
+        .as_u64_strict()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    let val = unsafe { a.get_unchecked(1) };
+    let cur = match DEQUES.get(&id) {
+        Some(x) => x,
+        None => return Err(anyhow!("raw::fatal::segfault")),
+    };
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(cur.read().contains(val) as u8);
+    Ok(())
+}
+
 impl_pop!(pop_front);
 impl_pop!(pop_back);
 impl_push!(push_front);
@@ -348,5 +362,6 @@ pub fn init() {
     putnfp("raw::deque::push_front", push_front);
     putnfp("raw::deque::push_back", push_back);
     putnfp("raw::deque::insert", insert);
+    putnfp("raw::deque::contains", contains);
     putnfp("raw::deque::append", append);
 }

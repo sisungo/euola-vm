@@ -3,7 +3,7 @@
 //!
 
 use crate::{
-    context::{putnfp, putstatic},
+    context::putnfp,
     libraw::iohmgr::FakeHasher,
     vmem::{Var, VectorRef},
 };
@@ -249,12 +249,6 @@ pub fn init() {
     putnfp("raw::cffi::ptr::offset", ptroffset);
     putnfp("raw::cffi::ptr::get", ptrget);
     putnfp("raw::cffi::ptr::set", ptrset);
-    putstatic("raw::cffi::i8", Var::U8(8));
-    putstatic("raw::cffi::i16", Var::U8(16));
-    putstatic("raw::cffi::i32", Var::U8(32));
-    putstatic("raw::cffi::i64", Var::U8(64));
-    putstatic("raw::cffi::str", Var::U8(12));
-    putstatic("raw::cffi::ptr", Var::U8(14));
 }
 
 /// Core of `raw::cffi::invoke`.

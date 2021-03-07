@@ -1,6 +1,7 @@
 //!
 //! This module provides `BTreeMap` data structure in `libraw`.
 //!
+
 use crate::{
     context::putnfp,
     libraw::iohmgr::{FakeHasher, IdGen},

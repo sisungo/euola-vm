@@ -1,6 +1,5 @@
 //!
-//! Dynamic-loading support of `libraw`. This provides both system and VM dynamic-loading support.
-//! VM Dynamic-loading is safe, however, system dynamic-loading is pretty unsafe.
+//! Dynamic-loading and virtual hardware controlling support of `libraw`.
 //!
 
 use crate::{
@@ -19,12 +18,23 @@ pub fn init() {
     putnfp("raw::coro::enter", coroenter);
     putnfp("raw::vhw::dump", dump);
     putnfp("raw::vhw::expand", expand);
+    putnfp("raw::vhw::hostinfo", os_id);
 }
 
 /// Core dump context.
 pub fn dump(a: &mut [Var]) -> Result<(), anyhow::Error> {
     unsafe {
         *a.get_unchecked_mut(0) = Var::UString((&*context::dump()).into());
+    }
+    Ok(())
+}
+
+/// Get OS ID.
+pub fn os_id(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    unsafe {
+        *a.get_unchecked_mut(0) = Var::UString(std::env::consts::FAMILY.into());
+        *a.get_unchecked_mut(1) = Var::UString(std::env::consts::OS.into());
+        *a.get_unchecked_mut(2) = Var::UString(std::env::consts::ARCH.into());
     }
     Ok(())
 }

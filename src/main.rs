@@ -10,7 +10,6 @@ pub mod executor;
 pub mod isa;
 pub mod libraw;
 pub mod os;
-/// UTF-8 encoded text executable euolaVM executable ball resolving.
 pub mod resolver;
 pub mod vmem;
 

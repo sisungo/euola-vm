@@ -281,7 +281,7 @@ pub fn start_noo(ctx: &mut Thread) {
                     Err(x) => {
                         tmp = x.downcast::<String>().unwrap();
                         &tmp
-                    },
+                    }
                 }) {
                     eprintln!("{:?}", ctx);
                     eprintln!("\nAborting...");
