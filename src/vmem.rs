@@ -167,7 +167,7 @@ impl ObjectRef {
     /// Create a new non-null object with specified type.
     #[inline]
     pub fn new(t: &str) -> Self {
-        let unique_obj = DashMap::default();
+        let unique_obj = DashMap::with_capacity_and_hasher(16, ahash::RandomState::default());
         unique_obj.insert(Box::from("type"), Var::UString(StringRef::from(t)));
         Self(Some(Arc::new(unique_obj)))
     }
@@ -226,10 +226,7 @@ impl PartialEq for ObjectRef {
                 }
                 None => false,
             },
-            None => match &other.0 {
-                Some(_) => false,
-                None => true,
-            },
+            None => other.0.is_none(),
         }
     }
 }
@@ -253,10 +250,8 @@ impl Hash for ObjectRef {
                 let mut t = Thread::new(fp);
                 t.sset(100, Var::Object(self.clone())).unwrap();
                 executor::start_noo(&mut t);
-                if let Ok(d) = t.sget(100) {
-                    if let Var::Bytes(z) = d {
-                        z.hash(state);
-                    }
+                if let Ok(Var::Bytes(z)) = t.sget(100) {
+                    z.hash(state);
                 }
             }
         }
@@ -310,7 +305,7 @@ impl From<&BytesRef> for VectorRef {
     fn from(r: &BytesRef) -> Self {
         match &r.0 {
             Some(x) => {
-                let inner = RwLock::new(Vec::new());
+                let inner = RwLock::new(Vec::with_capacity(x.read().len()));
                 x.read()
                     .iter()
                     .for_each(|y| inner.write().push(Var::U8(*y)));
@@ -337,7 +332,7 @@ impl_veclike!(VectorRef, Var, Var::U8(0));
 impl VectorRef {
     #[inline]
     pub fn empty() -> Self {
-        Self(Some(Arc::new(RwLock::new(Vec::new()))))
+        Self(Some(Arc::new(RwLock::new(Vec::with_capacity(4)))))
     }
     /// Borrow this reference.
     #[inline]
@@ -363,10 +358,7 @@ impl PartialEq for VectorRef {
                 Some(y) => *x.read() == *y.read(),
                 None => false,
             },
-            None => match &other.0 {
-                Some(_) => false,
-                None => true,
-            },
+            None => other.0.is_none(),
         }
     }
 }
@@ -389,10 +381,7 @@ impl PartialEq for BytesRef {
                 Some(y) => *x.read() == *y.read(),
                 None => false,
             },
-            None => match &other.0 {
-                Some(_) => false,
-                None => true,
-            },
+            None => other.0.is_none(),
         }
     }
 }
@@ -441,7 +430,7 @@ impl BytesRef {
     /// Create an empty one.
     #[inline]
     pub fn empty() -> Self {
-        Self(Some(Arc::new(RwLock::new(Vec::new()))))
+        Self(Some(Arc::new(RwLock::new(Vec::with_capacity(16)))))
     }
     /// Borrow this reference.
     #[inline]
@@ -479,10 +468,7 @@ impl PartialEq for StringRef {
                 Some(y) => *x.read() == *y.read(),
                 None => false,
             },
-            None => match other.0 {
-                Some(_) => false,
-                None => true,
-            },
+            None => other.0.is_none(),
         }
     }
 }

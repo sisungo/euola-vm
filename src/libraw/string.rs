@@ -197,21 +197,9 @@ pub fn from_chars(a: &mut [Var]) -> Result<(), anyhow::Error> {
 
 /// Equal test for strings.
 pub fn eq(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let val1 = unsafe { a.get_unchecked(0) }
-        .as_sr()
-        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
-    let val1 = val1.borrow();
-    let val2 = unsafe { a.get_unchecked(1) }
-        .as_sr()
-        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
-    let val2 = val2.borrow();
-    if val1.is_err() && val2.is_err() {
-        *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(1);
-    } else {
-        let val1 = val1.unwrap();
-        let val2 = val2.unwrap();
-        *(unsafe { a.get_unchecked_mut(0) }) = Var::U8((*val1 == *val2) as u8);
-    }
+    let val1 = unsafe { a.get_unchecked(0) };
+    let val2 = unsafe { a.get_unchecked(1) };
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::U8((val1 == val2) as u8);
     Ok(())
 }
 

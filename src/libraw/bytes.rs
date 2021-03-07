@@ -165,6 +165,14 @@ pub fn append(a: &mut [Var]) -> Result<(), anyhow::Error> {
     Ok(())
 }
 
+/// Equal test for bytes.
+pub fn eq(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let val1 = unsafe { a.get_unchecked(0) };
+    let val2 = unsafe { a.get_unchecked(1) };
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::U8((val1 == val2) as u8);
+    Ok(())
+}
+
 /// Insert.
 pub fn insert(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let cur = match unsafe { a.get_unchecked(0) } {
@@ -184,6 +192,16 @@ pub fn insert(a: &mut [Var]) -> Result<(), anyhow::Error> {
         cur.insert(index, val);
         Ok(())
     }
+}
+
+/// Deep clone.
+pub fn deep_clone(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let cur = match unsafe { a.get_unchecked(0) } {
+        Var::Bytes(x) => x.clone(),
+        _ => return Err(anyhow!("raw::fatal::not_a_buf")),
+    };
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::Bytes(cur.borrow()?.clone().into());
+    Ok(())
 }
 
 impl_fromint!(i8_as_be_bytes, to_be_bytes, I8);
@@ -263,4 +281,6 @@ pub fn init() {
     putnfp("raw::bytes::resolve<u64,be>", u64_from_be_bytes);
     putnfp("raw::bytes::resolve<u64,le>", u64_from_le_bytes);
     putnfp("raw::bytes::to_ptr", to_ptr);
+    putnfp("raw::bytes::eq", eq);
+    putnfp("raw::bytes::deep_clone", deep_clone);
 }
