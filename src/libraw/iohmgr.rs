@@ -218,6 +218,7 @@ impl CeIdGen {
 pub enum RawObject {
     LocalFile(std::fs::File),
     Thread(std::thread::JoinHandle<()>),
+    Sock(socket2::Socket),
 }
 
 /// Open a handler.

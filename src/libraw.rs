@@ -21,6 +21,7 @@ pub mod string;
 pub mod thread;
 pub mod time;
 pub mod vector;
+pub mod intvec;
 
 #[cfg(feature = "cffi")]
 pub mod cffi;
@@ -86,6 +87,7 @@ fn init_functions() {
     bytes::init();
     time::init();
     interruptions::init();
+    intvec::init();
 
     #[cfg(feature = "cffi")]
     cffi::init();

@@ -204,6 +204,17 @@ pub fn deep_clone(a: &mut [Var]) -> Result<(), anyhow::Error> {
     Ok(())
 }
 
+/// Containing test.
+pub fn contains(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let cur = match unsafe { a.get_unchecked(0) } {
+        Var::Bytes(x) => x,
+        _ => return Err(anyhow!("raw::fatal::not_a_buf")),
+    }.clone();
+    let val = unsafe { a.get_unchecked(1) }.as_u8().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(cur.borrow()?.contains(&val) as u8);
+    Ok(())
+}
+
 impl_fromint!(i8_as_be_bytes, to_be_bytes, I8);
 impl_fromint!(i8_as_le_bytes, to_le_bytes, I8);
 impl_fromint!(u8_as_be_bytes, to_be_bytes, U8);
@@ -248,6 +259,7 @@ pub fn init() {
     putnfp("raw::bytes::insert", insert);
     putnfp("raw::bytes::resize", resize);
     putnfp("raw::bytes::append", append);
+    putnfp("raw::bytes::contains", contains);
     putnfp("raw::bytes::from<i8,be>", i8_as_be_bytes);
     putnfp("raw::bytes::from<i8,le>", i8_as_le_bytes);
     putnfp("raw::bytes::from<u8,be>", u8_as_be_bytes);
