@@ -21,3 +21,9 @@ Run this program with:
     EUOLA_VM_EXECUTE=hello.s EUOLA_VM_DEPENDENCIES=ceras/start.s:ceras/stdio.s:ceras/fmt.s:ceras/ffi.s:ceras/coro.s:ceras/sync.s euola-vm
 
 The you will see `Hello, world` printed on the console.
+
+## Project Plan
+The following are plans of this project. Some plans will take a lot of time to implement:
+ - GC instead of RC for references
+ - Socket in `libraw`
+ - euolaVM Executable Ball Binary
