@@ -167,7 +167,7 @@ impl ObjectRef {
     /// Create a new non-null object with specified type.
     #[inline]
     pub fn new(t: &str) -> Self {
-        let unique_obj = DashMap::with_capacity_and_hasher(16, ahash::RandomState::default());
+        let unique_obj = DashMap::with_capacity_and_hasher(8, ahash::RandomState::default());
         unique_obj.insert(Box::from("type"), Var::UString(StringRef::from(t)));
         Self(Some(Arc::new(unique_obj)))
     }

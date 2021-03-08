@@ -2,12 +2,15 @@
 //! Raw environment API bindings, the `env` module of `libraw`.
 //!
 
-use crate::{context::putnfp, libraw::iohmgr, vmem::Var};
+use crate::{context::{putnfp, Thread}, executor, libraw::iohmgr, vmem::Var, isa::VirtFuncPtr};
 use anyhow::anyhow;
 use once_cell::sync::Lazy;
+use parking_lot::Mutex;
 
 /// Console arguments.
 static ARGS: Lazy<Vec<String>> = Lazy::new(|| std::env::args().collect());
+/// Handler of Ctrl+C.
+static CTRLC_HANDLER: Lazy<Mutex<Option<VirtFuncPtr>>> = Lazy::new(|| Mutex::new(None));
 
 /// Initialize the library.
 #[inline(always)]
@@ -20,7 +23,7 @@ pub fn init() {
     putnfp("raw::env::exit", exit);
     putnfp("raw::env::abort", abort);
     putnfp("raw::env::getpid", getpid);
-    putnfp("raw::env::catch_sysint", catch_sysint);
+    putnfp("raw::env::catch_ctrlc", catch_sysint);
     putnfp("raw::env::chdir", cd);
     putnfp("raw::env::temp_dir", temp_dir);
 }
@@ -54,8 +57,7 @@ pub fn temp_dir(a: &mut [Var]) -> Result<(), anyhow::Error> {
 /// Catch system interruption.
 pub fn catch_sysint(a: &mut [Var]) -> Result<(), anyhow::Error> {
     use crate::{
-        context::{getfp, Thread},
-        executor,
+        context::getfp,
         isa::FuncPtr,
     };
 
@@ -66,8 +68,16 @@ pub fn catch_sysint(a: &mut [Var]) -> Result<(), anyhow::Error> {
         Some(FuncPtr::Virtual(x)) => x,
         _ => return Err(anyhow!("raw::fatal::segfault")),
     };
-    ctrlc::set_handler(move || executor::start(Thread::new(fp))).ok();
+    *CTRLC_HANDLER.lock() = Some(fp);
+    unsafe {
+        libc::signal(libc::SIGINT, ctrlc_handler as usize);
+    }
     Ok(())
+}
+
+/// Ctrl-C handler.
+extern "C" fn ctrlc_handler(_: libc::c_int) {
+    executor::start(Thread::new(CTRLC_HANDLER.lock().map(|x| x).unwrap()));
 }
 
 /// Get argument.

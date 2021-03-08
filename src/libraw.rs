@@ -5,7 +5,6 @@
 //! and it doesn't contain any features that don't support one of Windows or UNIX.
 //!
 
-pub mod btreemap;
 pub mod bytes;
 pub mod cio;
 pub mod deque;
@@ -85,7 +84,6 @@ fn init_functions() {
     hashmap::init();
     deque::init();
     bytes::init();
-    btreemap::init();
     time::init();
     interruptions::init();
 

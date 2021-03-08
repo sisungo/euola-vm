@@ -2,7 +2,7 @@
 //! euolaVM executable ball resolving module.
 //!
 //! This provides two formats:
-//!  - Assembly(*.s)
+//!  - Assembly(*.s/*.asm)
 //!  - Binary(*.euo)
 //!
 //! Binary is faster than Assembly, but not human-friendly. Binaries can be generated
@@ -17,12 +17,14 @@ use anyhow::anyhow;
 
 /// Load from file.
 pub fn resolve(path: &str) -> Result<(), anyhow::Error> {
-    if path.ends_with(".s") {
+    if path.ends_with(".s") || path.ends_with(".asm") {
         asm::resolve(path)
     } else if path.ends_with(".euo") {
         bin::resolve(path)
     } else {
-        Err(anyhow!("unknown file format: only `*.s` and `*.euo` are allowed!"))
+        Err(anyhow!(
+            "unknown file format: only `*.s` and `*.euo` are allowed!"
+        ))
     }
 }
 

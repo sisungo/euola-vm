@@ -1,5 +1,5 @@
 //!
-//! [WIP] euolaVM binary-formatted executable ball resolver.
+//! WIP: euolaVM binary-formatted executable ball resolver.
 //!
 
 use anyhow::anyhow;

@@ -19,10 +19,6 @@ use ansi_term::{
 };
 use std::{env, process::exit};
 
-#[cfg_attr(feature = "fast-alloc", global_allocator)]
-#[cfg(feature = "fast-alloc")]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
-
 /// Get environment `EUOLA_VM_EXECUTE`.
 fn getexecenv() -> String {
     let result = match env::var("EUOLA_VM_EXECUTE") {
