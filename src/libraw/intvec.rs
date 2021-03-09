@@ -51,7 +51,9 @@ macro_rules! impl_push {
             let id = unsafe { a.get_unchecked(0) }
                 .as_u64_strict()
                 .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
-            let val = unsafe { a.get_unchecked(1) }.as_i64().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+            let val = unsafe { a.get_unchecked(1) }
+                .as_i64()
+                .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
             let deque = match DEQUES.get(&id) {
                 Some(x) => x,
                 None => unsafe {
@@ -120,7 +122,9 @@ pub fn set(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let index = unsafe { a.get_unchecked(1) }
         .as_usize()
         .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
-    let val = unsafe { a.get_unchecked(2) }.as_i64().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    let val = unsafe { a.get_unchecked(2) }
+        .as_i64()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
     let deque = match DEQUES.get(&id) {
         Some(x) => x,
         None => unsafe {
@@ -232,7 +236,9 @@ pub fn insert(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let index = unsafe { a.get_unchecked(1) }
         .as_usize()
         .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
-    let val = unsafe { a.get_unchecked(2) }.as_i64().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    let val = unsafe { a.get_unchecked(2) }
+        .as_i64()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
     if index > cur.len() {
         Err(anyhow!("raw::fatal::out_of_range"))
     } else {
@@ -297,7 +303,9 @@ pub fn contains(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let id = unsafe { a.get_unchecked(0) }
         .as_u64_strict()
         .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
-    let val = unsafe { a.get_unchecked(1) }.as_i64().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    let val = unsafe { a.get_unchecked(1) }
+        .as_i64()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
     let cur = match DEQUES.get(&id) {
         Some(x) => x,
         None => return Err(anyhow!("raw::fatal::segfault")),
@@ -308,7 +316,9 @@ pub fn contains(a: &mut [Var]) -> Result<(), anyhow::Error> {
 
 /// Timsort.
 pub fn sort_tim(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let id = unsafe { a.get_unchecked(0) }.as_u64_strict().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    let id = unsafe { a.get_unchecked(0) }
+        .as_u64_strict()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
     let cur = match DEQUES.get(&id) {
         Some(x) => x,
         None => return Err(anyhow!("raw::fatal::segfault")),
@@ -319,7 +329,9 @@ pub fn sort_tim(a: &mut [Var]) -> Result<(), anyhow::Error> {
 
 /// Quicksort.
 pub fn sort_uns(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let id = unsafe { a.get_unchecked(0) }.as_u64_strict().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    let id = unsafe { a.get_unchecked(0) }
+        .as_u64_strict()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
     let cur = match DEQUES.get(&id) {
         Some(x) => x,
         None => return Err(anyhow!("raw::fatal::segfault")),

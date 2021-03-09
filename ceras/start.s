@@ -4,6 +4,7 @@ C raw::coro::enter
 
 |>_start_coro
 C ceras::_intsetup
+C ceras::_staticsetup
 C ceras::coro::_init
 C main
 C ceras::coro::_cleanup
@@ -118,5 +119,12 @@ r
 v 100 U f"raw::fatal::not_a_ptr"
 v 101 U f"Attempted to invoke a feature that requires a virtual pointer integer, but other kind of value is passed."
 C raw::int::abort
+r
+<|
+
+|>ceras::_staticsetup
+v 100 U f"3.141592653589793238462643383279502884197169399375105820974944"
+C raw::f64::from<str>
+s ceras::math::pi 101
 r
 <|

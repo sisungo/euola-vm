@@ -209,8 +209,11 @@ pub fn contains(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let cur = match unsafe { a.get_unchecked(0) } {
         Var::Bytes(x) => x,
         _ => return Err(anyhow!("raw::fatal::not_a_buf")),
-    }.clone();
-    let val = unsafe { a.get_unchecked(1) }.as_u8().ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
+    }
+    .clone();
+    let val = unsafe { a.get_unchecked(1) }
+        .as_u8()
+        .ok_or_else(|| anyhow!("raw::fatal::not_an_integer"))?;
     *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(cur.borrow()?.contains(&val) as u8);
     Ok(())
 }

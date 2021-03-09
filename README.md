@@ -27,3 +27,9 @@ The following are plans of this project. Some plans will take a lot of time to i
  - GC instead of RC for references
  - Socket in `libraw`
  - euolaVM Executable Ball Binary
+ - Print backtrace on `panic!` when `std::backtrace` went stable
+
+## Portability
+The following platforms are tested:
+    x86_64-unknown-linux-musl
+    x86_64-pc-windows-gnu

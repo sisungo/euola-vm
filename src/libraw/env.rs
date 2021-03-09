@@ -2,7 +2,13 @@
 //! Raw environment API bindings, the `env` module of `libraw`.
 //!
 
-use crate::{context::{putnfp, Thread}, executor, libraw::iohmgr, vmem::Var, isa::VirtFuncPtr};
+use crate::{
+    context::{putnfp, Thread},
+    executor,
+    isa::VirtFuncPtr,
+    libraw::iohmgr,
+    vmem::Var,
+};
 use anyhow::anyhow;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
@@ -56,10 +62,7 @@ pub fn temp_dir(a: &mut [Var]) -> Result<(), anyhow::Error> {
 
 /// Catch system interruption.
 pub fn catch_sysint(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    use crate::{
-        context::getfp,
-        isa::FuncPtr,
-    };
+    use crate::{context::getfp, isa::FuncPtr};
 
     let fp = unsafe { a.get_unchecked(0) }
         .as_sr()

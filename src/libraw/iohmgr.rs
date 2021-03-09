@@ -219,6 +219,7 @@ pub enum RawObject {
     LocalFile(std::fs::File),
     Thread(std::thread::JoinHandle<()>),
     Sock(socket2::Socket),
+    SockAddr(socket2::SockAddr),
 }
 
 /// Open a handler.
