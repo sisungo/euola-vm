@@ -16,8 +16,8 @@ use anyhow::anyhow;
 pub fn init() {
     putnfp("raw::dl::vload", vload);
     putnfp("raw::coro::enter", coroenter);
-    putnfp("raw::vhw::dump", dump);
-    putnfp("raw::vhw::expand", expand);
+    putnfp("raw::vhw::dump<context>", dump);
+    putnfp("raw::vhw::expand<topsil>", expand);
     putnfp("raw::vhw::hostinfo", os_id);
 }
 

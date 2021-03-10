@@ -101,7 +101,7 @@ pub fn int(name: &str) -> bool {
                 return true;
             }
             InterruptHandler::Handler(y) => {
-                executor::start(Thread::new(y));
+                executor::start(Thread::new(y.clone()));
             }
             _ => (),
         }

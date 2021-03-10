@@ -43,8 +43,7 @@ fn init_rspanic_handler() {
             Color::{Blue, Red},
             Style,
         };
-        use std::process::exit;
-
+        
         eprintln!("\n {} euolaVM Panic", Red.paint("!!!"));
         let location = info.location().unwrap();
         let locs = Style::new().italic().underline();
@@ -66,7 +65,7 @@ fn init_rspanic_handler() {
             url.paint("https://todo.sr.ht/~sisungo/euola-vm")
         );
         eprintln!(" - Email <{}>", url.paint("sisungo@protonmail.com"));
-        exit(-1);
+        std::process::exit(-1);
     }));
 }
 

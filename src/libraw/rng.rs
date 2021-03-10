@@ -11,6 +11,7 @@ use rand_chacha::*;
 use rand_core::{RngCore, SeedableRng};
 use std::mem::{size_of, transmute};
 
+/// Chacha 8 Random Generator
 static CHACHA8: Lazy<Mutex<ChaCha8Rng>> = Lazy::new(|| {
     Mutex::new(ChaCha8Rng::from_seed({
         let mut buf = [0u8; 32];
@@ -18,6 +19,7 @@ static CHACHA8: Lazy<Mutex<ChaCha8Rng>> = Lazy::new(|| {
         buf
     }))
 });
+/// Chacha 12 Random Generator
 static CHACHA12: Lazy<Mutex<ChaCha12Rng>> = Lazy::new(|| {
     Mutex::new(ChaCha12Rng::from_seed({
         let mut buf = [0u8; 32];
@@ -25,6 +27,7 @@ static CHACHA12: Lazy<Mutex<ChaCha12Rng>> = Lazy::new(|| {
         buf
     }))
 });
+/// Chacha 20 Random Generator
 static CHACHA20: Lazy<Mutex<ChaCha20Rng>> = Lazy::new(|| {
     Mutex::new(ChaCha20Rng::from_seed({
         let mut buf = [0u8; 32];

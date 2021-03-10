@@ -1,5 +1,5 @@
 use crate::vmem::Var;
-use std::fmt::{self, Debug, Formatter};
+use std::{fmt::{self, Debug, Formatter}, sync::Arc};
 
 /// An instruction.
 #[derive(Debug, Clone)]
@@ -99,7 +99,7 @@ pub enum Instruction {
 }
 
 /// The virtual function pointer.
-pub type VirtFuncPtr = &'static [Instruction];
+pub type VirtFuncPtr = Arc<[Instruction]>;
 /// The native function pointer with VM-friendly ABI.
 pub type NativeFuncPtr = fn(&mut [Var]) -> Result<(), anyhow::Error>;
 

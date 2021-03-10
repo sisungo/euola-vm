@@ -29,7 +29,7 @@ r
 
 |>ceras::_intsetup_segfault
 v 100 U f"raw::fatal::segfault"
-v 101 U f"SIL access overflowed. Valid SIL area is from 0 to 150."
+v 101 U f"SIL access out-of-range. Valid SIL area is from 0 to 150."
 C raw::int::abort
 r
 <|
@@ -123,8 +123,11 @@ r
 <|
 
 |>ceras::_staticsetup
-v 100 U f"3.141592653589793238462643383279502884197169399375105820974944"
+v 100 U f"3.14159265358979323846264338327950288"
 C raw::f64::from<str>
 s ceras::math::pi 101
+v 100 U f"2.71828182845904523536028747135266250"
+C raw::f64::from<str>
+s ceras::math::e 101
 r
 <|

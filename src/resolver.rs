@@ -22,8 +22,13 @@ pub fn resolve(path: &str) -> Result<(), anyhow::Error> {
     } else if path.ends_with(".euo") {
         bin::resolve(path)
     } else {
+        let fmt = if path.split('.').count() == 0 {
+            "<unspecified>"
+        } else {
+            path.split('.').last().unwrap()
+        };
         Err(anyhow!(
-            "unknown file format: only `*.s` and `*.euo` are allowed!"
+            "unexpected file format `{}`: expected one of `*.s`, `*.asm` or `.euo` !", fmt
         ))
     }
 }

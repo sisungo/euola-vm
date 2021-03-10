@@ -18,7 +18,9 @@ The `Hello, world!` program in euolaVM (using `ceras`) is:
 
 Run this program with:
 
-    EUOLA_VM_EXECUTE=hello.s EUOLA_VM_DEPENDENCIES=ceras/start.s:ceras/stdio.s:ceras/fmt.s:ceras/ffi.s:ceras/coro.s:ceras/sync.s euola-vm
+    EUOLA_VM_EXECUTE=hello.s \
+    EUOLA_VM_DEPENDENCIES=resources/ceras/start.s:resources/ceras/stdio.s:resources/ceras/fmt.s:resources/ceras/ffi.s:resources/ceras/coro.s:resources/ceras/sync.s \
+    ./target/release/euola-vm
 
 The you will see `Hello, world` printed on the console.
 
@@ -28,8 +30,14 @@ The following are plans of this project. Some plans will take a lot of time to i
  - Socket in `libraw`
  - euolaVM Executable Ball Binary
  - Print backtrace on `panic!` when `std::backtrace` went stable
+ - Encryption in `libraw`
 
 ## Portability
 The following platforms are tested:
     x86_64-unknown-linux-musl
+
+The following platforms are successfully built:
     x86_64-pc-windows-gnu
+
+The following platforms are planned to test:
+    x86_64-unknown-freebsd

@@ -295,7 +295,7 @@ pub fn resolve_fn(n: &str, c: &[SmallVec<[Box<str>; 4]>]) -> Result<(), anyhow::
             None => continue,
         }
     }
-    putvfp(n, result.leak());
+    putvfp(n, result.into());
     Ok(())
 }
 
