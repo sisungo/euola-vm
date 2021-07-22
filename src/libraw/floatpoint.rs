@@ -4,7 +4,10 @@
 //! `system::f64` module provides high-level abstraction of this library.
 //!
 
-use crate::{context::{putstatic, putnfp}, vmem::Var};
+use crate::{
+    context::{putnfp, putstatic},
+    vmem::Var,
+};
 use anyhow::anyhow;
 
 macro_rules! impl_fpcalc {
@@ -190,6 +193,9 @@ pub fn init() {
     putnfp("raw::fpu::cbrt", cbrt);
     putnfp("raw::f64::to_string", to_str);
     putstatic("raw::f64::nan", Var::U64(f64::NAN.to_bits()));
-    putstatic("raw::f64::infinity", Var::U64(f64::INFINITY.to_bits()));
-    putstatic("raw::f64::neginfinity", Var::U64(f64::NEG_INFINITY.to_bits()));
+    putstatic("raw::f64::inf", Var::U64(f64::INFINITY.to_bits()));
+    putstatic(
+        "raw::f64::neg_inf",
+        Var::U64(f64::NEG_INFINITY.to_bits()),
+    );
 }

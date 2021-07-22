@@ -11,6 +11,7 @@ use crate::{
 use anyhow::anyhow;
 use dashmap::DashMap;
 use once_cell::sync::Lazy;
+use std::{cell::RefCell, collections::HashMap};
 
 /// Collection of functions.
 static FUNCTIONS: Lazy<DashMap<Box<str>, FuncPtr, ahash::RandomState>> =
@@ -22,6 +23,21 @@ static INTERRUPTIONS: Lazy<DashMap<Box<str>, InterruptHandler, ahash::RandomStat
 /// Static variable storage.
 static VM_STATIC: Lazy<DashMap<Box<str>, Var, ahash::RandomState>> =
     Lazy::new(|| DashMap::with_capacity_and_hasher(16, ahash::RandomState::default()));
+
+std::thread_local! {
+    /// Thread-local cache of `FUNCTIONS`.
+    static FUNCTIONS_CACHE: RefCell<HashMap<Box<str>, FuncPtr, ahash::RandomState>> = RefCell::new(sync_cache());
+}
+
+#[inline(always)]
+fn sync_cache() -> HashMap<Box<str>, FuncPtr, ahash::RandomState> {
+    let mut result =
+        HashMap::with_capacity_and_hasher(FUNCTIONS.capacity(), ahash::RandomState::default());
+    for i in FUNCTIONS.iter() {
+        result.insert(i.key().to_owned(), i.value().to_owned());
+    }
+    result
+}
 
 /// Context dump.
 #[inline(always)]
@@ -36,7 +52,17 @@ pub fn dump() -> Box<str> {
 /// Get a function pointer.
 #[inline(always)]
 pub fn getfp(name: &str) -> Option<FuncPtr> {
-    FUNCTIONS.get(name).map(|x| x.to_owned())
+    FUNCTIONS_CACHE.with(|cache| {
+        let borrow = cache.borrow();
+        match borrow.get(name) {
+            Some(x) => Some(x.to_owned()),
+            None => FUNCTIONS.get(name).map(|x| {
+                drop(borrow);
+                *cache.borrow_mut() = sync_cache();
+                x.to_owned()
+            }),
+        }
+    })
 }
 /// Put a function pointer.
 #[inline(always)]

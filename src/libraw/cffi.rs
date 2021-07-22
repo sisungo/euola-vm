@@ -247,8 +247,8 @@ pub fn init() {
     putnfp("raw::cffi::opensym", opensym);
     putnfp("raw::cffi::invoke", invoke);
     putnfp("raw::cffi::ptr::offset", ptroffset);
-    putnfp("raw::cffi::ptr::get", ptrget);
-    putnfp("raw::cffi::ptr::set", ptrset);
+    putnfp("raw::cffi::ptr::read", ptrget);
+    putnfp("raw::cffi::ptr::write", ptrset);
 }
 
 /// Core of `raw::cffi::invoke`.

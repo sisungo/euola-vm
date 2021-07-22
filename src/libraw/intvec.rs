@@ -347,19 +347,19 @@ impl_push!(push);
 #[inline(always)]
 pub fn init() {
     IDGEN.lock().next();
-    putnfp("raw::ints::new", new);
-    putnfp("raw::ints::drop", drop);
-    putnfp("raw::ints::get", get);
-    putnfp("raw::ints::set", set);
-    putnfp("raw::ints::swap", swap);
-    putnfp("raw::ints::truncate", truncate);
-    putnfp("raw::ints::len", len);
-    putnfp("raw::ints::clear", clear);
-    putnfp("raw::ints::pop", pop);
-    putnfp("raw::ints::push", push);
-    putnfp("raw::ints::insert", insert);
-    putnfp("raw::ints::contains", contains);
-    putnfp("raw::ints::append", append);
-    putnfp("raw::ints::sort<timsort>", sort_tim);
-    putnfp("raw::ints::sort<qsort>", sort_uns);
+    putnfp("raw::int_vec::new", new);
+    putnfp("raw::int_vec::drop", drop);
+    putnfp("raw::int_vec::get", get);
+    putnfp("raw::int_vec::set", set);
+    putnfp("raw::int_vec::swap", swap);
+    putnfp("raw::int_vec::truncate", truncate);
+    putnfp("raw::int_vec::len", len);
+    putnfp("raw::int_vec::clear", clear);
+    putnfp("raw::int_vec::pop", pop);
+    putnfp("raw::int_vec::push", push);
+    putnfp("raw::int_vec::insert", insert);
+    putnfp("raw::int_vec::contains", contains);
+    putnfp("raw::int_vec::append", append);
+    putnfp("raw::int_vec::sort<timsort>", sort_tim);
+    putnfp("raw::int_vec::sort<qsort>", sort_uns);
 }

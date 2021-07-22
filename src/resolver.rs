@@ -28,7 +28,8 @@ pub fn resolve(path: &str) -> Result<(), anyhow::Error> {
             path.split('.').last().unwrap()
         };
         Err(anyhow!(
-            "unexpected file format `{}`: expected one of `*.s`, `*.asm` or `.euo` !", fmt
+            "unexpected file format `{}`: expected one of `*.s`, `*.asm` or `.euo` !",
+            fmt
         ))
     }
 }

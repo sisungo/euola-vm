@@ -8,14 +8,12 @@ use crate::{
     vmem::Var,
 };
 use anyhow::anyhow;
-use dashmap::DashMap;
-use once_cell::sync::Lazy;
-use std::thread::{current, ThreadId};
+use std::{cell::RefCell, collections::HashMap};
 
-#[allow(clippy::type_complexity)]
-static TLSMAP: Lazy<
-    DashMap<ThreadId, DashMap<Box<str>, Var, ahash::RandomState>, ahash::RandomState>,
-> = Lazy::new(DashMap::default);
+thread_local! {
+    /// TLS Map of current thread.
+    static TLS_MAP: RefCell<HashMap<Box<str>, Var, ahash::RandomState>> = RefCell::new(HashMap::default());
+}
 
 /// Set a TLS.
 pub fn tls_set(a: &mut [Var]) -> Result<(), anyhow::Error> {
@@ -24,20 +22,7 @@ pub fn tls_set(a: &mut [Var]) -> Result<(), anyhow::Error> {
         .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
     let key = key.borrow()?;
     let val = unsafe { a.get_unchecked(1) }.to_owned();
-    match TLSMAP.get(&current().id()) {
-        Some(x) => {
-            x.insert(Box::from(&key[..]), val);
-        }
-        None => {
-            TLSMAP.insert(current().id(), DashMap::default());
-            match TLSMAP.get(&current().id()) {
-                Some(y) => {
-                    y.insert(Box::from(&key[..]), val);
-                }
-                None => unsafe { std::hint::unreachable_unchecked() },
-            }
-        }
-    }
+    TLS_MAP.with(|x| x.borrow_mut().insert(Box::from(&key[..]), val));
     Ok(())
 }
 
@@ -47,39 +32,15 @@ pub fn tls_get(a: &mut [Var]) -> Result<(), anyhow::Error> {
         .as_sr()
         .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
     let name = name.borrow()?;
-    match TLSMAP.get(&current().id()) {
-        Some(x) => match x.get(&name[..]) {
-            Some(y) => {
-                *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(1);
-                *(unsafe { a.get_unchecked_mut(1) }) = y.to_owned();
-            }
-            None => {
-                *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(0);
-            }
-        },
+    TLS_MAP.with(|x| match x.borrow().get(&name[..]) {
+        Some(y) => {
+            *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(1);
+            *(unsafe { a.get_unchecked_mut(1) }) = y.to_owned();
+        }
         None => {
-            TLSMAP.insert(current().id(), DashMap::default());
             *(unsafe { a.get_unchecked_mut(0) }) = Var::U8(0);
         }
-    }
-    Ok(())
-}
-
-/// Remove a TLS.
-pub fn tls_del(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let name = unsafe { a.get_unchecked(0) }
-        .as_sr()
-        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
-    let name = name.borrow()?;
-    if let Some(x) = TLSMAP.get(&current().id()) {
-        x.remove(&name[..]);
-    }
-    Ok(())
-}
-
-/// Close this thread's TLS.
-pub fn tls_free(_: &mut [Var]) -> Result<(), anyhow::Error> {
-    TLSMAP.remove(&current().id());
+    });
     Ok(())
 }
 
@@ -197,8 +158,6 @@ pub fn par_count(a: &mut [Var]) -> Result<(), anyhow::Error> {
 pub fn init() {
     putnfp("raw::thread::tls_get", tls_get);
     putnfp("raw::thread::tls_set", tls_set);
-    putnfp("raw::thread::tls_remove", tls_del);
-    putnfp("raw::thread::tls_clear", tls_free);
     putnfp("raw::thread::spawn", spawn);
     putnfp("raw::thread::join", join);
     putnfp("raw::thread::sleep<msec>", msleep);

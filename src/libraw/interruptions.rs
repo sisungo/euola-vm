@@ -61,9 +61,4 @@ pub fn init() {
     putnfp("raw::int::ignore", ign);
     putnfp("raw::int::abort", abrt);
     putnfp("raw::int::catch", intcatch);
-
-    intabort(
-        "raw::fatal::early_eof",
-        Some("unexpected fatal error -- aborted by default for secure".to_owned()),
-    );
 }

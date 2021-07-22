@@ -1,5 +1,8 @@
 use crate::vmem::Var;
-use std::{fmt::{self, Debug, Formatter}, sync::Arc};
+use std::{
+    fmt::{self, Debug, Formatter},
+    sync::Arc,
+};
 
 /// An instruction.
 #[derive(Debug, Clone)]

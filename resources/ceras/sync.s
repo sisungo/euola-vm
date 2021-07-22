@@ -53,7 +53,7 @@ r
 |>ceras::cls::_get_tname_impl
 C raw::str::from<auto>
 D 100 101
-d 100 U f"ceras::cls::table"
+d 100 U f"ceras::cls::_table@"
 C raw::str::push_str
 r
 <|

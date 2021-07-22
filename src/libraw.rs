@@ -43,7 +43,7 @@ fn init_rspanic_handler() {
             Color::{Blue, Red},
             Style,
         };
-        
+
         eprintln!("\n {} euolaVM Panic", Red.paint("!!!"));
         let location = info.location().unwrap();
         let locs = Style::new().italic().underline();
