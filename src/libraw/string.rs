@@ -366,8 +366,8 @@ pub fn init() {
     putnfp("raw::str::deep_clone", deep_clone);
     putnfp("raw::str::contains", contains);
     putnfp("raw::str::replace", replace);
-    putnfp("raw::str::lowercase", to_lowercase);
-    putnfp("raw::str::uppercase", to_uppercase);
+    putnfp("raw::str::to_lowercase", to_lowercase);
+    putnfp("raw::str::to_uppercase", to_uppercase);
     putnfp("raw::str::clear", clear);
     putnfp("raw::str::is_ascii", is_ascii);
     putnfp("raw::str::to_chars", to_chars);

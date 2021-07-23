@@ -81,7 +81,7 @@ pub fn catch_sysint(a: &mut [Var]) -> Result<(), anyhow::Error> {
 /// Ctrl-C handler.
 extern "C" fn ctrlc_handler(_: libc::c_int) {
     executor::start(Thread::new(
-        CTRLC_HANDLER.lock().as_ref().map(|x| x).unwrap().clone(),
+        CTRLC_HANDLER.lock().as_ref().unwrap().clone(),
     ));
 }
 

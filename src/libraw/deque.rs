@@ -305,7 +305,7 @@ pub fn append(a: &mut [Var]) -> Result<(), anyhow::Error> {
     };
     match unsafe { a.get_unchecked(1) } {
         Var::U64(x) => {
-            let ndeq = match DEQUES.get(&x) {
+            let ndeq = match DEQUES.get(x) {
                 Some(x) => x,
                 None => return Err(anyhow!("raw::fatal::segfault")),
             };

@@ -44,6 +44,14 @@ pub fn tls_get(a: &mut [Var]) -> Result<(), anyhow::Error> {
     Ok(())
 }
 
+/// Delete a TLS.
+pub fn tls_del(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let name = unsafe { a.get_unchecked(0) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let name = name.borrow()?;
+    TLS_MAP.with(|x| x.borrow_mut().remove(&name[..]));
+    Ok(())
+}
+
 /// Spawn a thread.
 pub fn spawn(a: &mut [Var]) -> Result<(), anyhow::Error> {
     use crate::{context::getfp, executor::start, isa::FuncPtr};
@@ -158,6 +166,7 @@ pub fn par_count(a: &mut [Var]) -> Result<(), anyhow::Error> {
 pub fn init() {
     putnfp("raw::thread::tls_get", tls_get);
     putnfp("raw::thread::tls_set", tls_set);
+    putnfp("raw::thread::tls_del", tls_del);
     putnfp("raw::thread::spawn", spawn);
     putnfp("raw::thread::join", join);
     putnfp("raw::thread::sleep<msec>", msleep);

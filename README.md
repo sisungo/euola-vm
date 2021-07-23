@@ -19,7 +19,7 @@ The `Hello, world!` program in euolaVM (using `ceras`) is:
 Run this program with:
 
     EUOLA_VM_EXECUTE=hello.s \
-    EUOLA_VM_DEPENDENCIES=resources/ceras/start.s:resources/ceras/stdio.s:resources/ceras/fmt.s:resources/ceras/ffi.s:resources/ceras/coro.s:resources/ceras/sync.s \
+    EUOLA_VM_DEPENDENCIES=libstd.s \
     ./target/release/euola-vm
 
 The you will see `Hello, world` printed on the console.
