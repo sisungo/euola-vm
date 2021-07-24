@@ -18,7 +18,6 @@ pub mod intvec;
 pub mod iohmgr;
 pub mod proc;
 pub mod rng;
-pub mod sock;
 pub mod string;
 pub mod thread;
 pub mod time;
@@ -88,7 +87,6 @@ fn init_functions() {
     time::init();
     interruptions::init();
     intvec::init();
-    sock::init();
 
     #[cfg(feature = "cffi")]
     cffi::init();

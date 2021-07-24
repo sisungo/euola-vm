@@ -164,15 +164,15 @@ pub fn par_count(a: &mut [Var]) -> Result<(), anyhow::Error> {
 /// Initialize the library.
 #[inline(always)]
 pub fn init() {
-    putnfp("raw::thread::tls_get", tls_get);
-    putnfp("raw::thread::tls_set", tls_set);
-    putnfp("raw::thread::tls_del", tls_del);
-    putnfp("raw::thread::spawn", spawn);
-    putnfp("raw::thread::join", join);
-    putnfp("raw::thread::sleep<msec>", msleep);
-    putnfp("raw::thread::sleep<nsec>", nsleep);
-    putnfp("raw::thread::sleep<sec>", sleep);
-    putnfp("raw::thread::yield", yield_now);
-    putnfp("raw::thread::par_count", par_count);
-    putnfp("raw::thread::cpu_count", cpu_count);
+    putnfp("raw::thrd::tls::get", tls_get);
+    putnfp("raw::thrd::tls::set", tls_set);
+    putnfp("raw::thrd::tls::del", tls_del);
+    putnfp("raw::thrd::spawn", spawn);
+    putnfp("raw::thrd::join", join);
+    putnfp("raw::thrd::sleep<msec>", msleep);
+    putnfp("raw::thrd::sleep<nsec>", nsleep);
+    putnfp("raw::thrd::sleep<sec>", sleep);
+    putnfp("raw::thrd::yield", yield_now);
+    putnfp("raw::thrd::par_count", par_count);
+    putnfp("raw::thrd::cpu_count", cpu_count);
 }

@@ -242,13 +242,13 @@ pub fn ptrset(a: &mut [Var]) -> Result<(), anyhow::Error> {
 /// Initialize the library.
 #[inline(always)]
 pub fn init() {
-    putnfp("raw::cffi::openlib", opendll);
-    putnfp("raw::cffi::getpath", libpath);
-    putnfp("raw::cffi::opensym", opensym);
-    putnfp("raw::cffi::invoke", invoke);
-    putnfp("raw::cffi::ptr::offset", ptroffset);
-    putnfp("raw::cffi::ptr::read", ptrget);
-    putnfp("raw::cffi::ptr::write", ptrset);
+    putnfp("raw::ffi::openlib", opendll);
+    putnfp("raw::ffi::getpath", libpath);
+    putnfp("raw::ffi::opensym", opensym);
+    putnfp("raw::ffi::invoke", invoke);
+    putnfp("raw::ffi::ptr::offset", ptroffset);
+    putnfp("raw::ffi::ptr::read", ptrget);
+    putnfp("raw::ffi::ptr::write", ptrset);
 }
 
 /// Core of `raw::cffi::invoke`.

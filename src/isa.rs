@@ -118,7 +118,7 @@ impl Debug for FuncPtr {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
             Self::Virtual(x) => write!(f, "{:?}", x),
-            Self::Native(x) => write!(f, "(native:{})", x as *const _ as usize),
+            Self::Native(x) => write!(f, "(native:{:p})", x as *const _),
         }
     }
 }

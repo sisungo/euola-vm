@@ -5,7 +5,7 @@
 //!
 
 use crate::{
-    context::{putnfp, putstatic},
+    context::putnfp,
     vmem::Var,
 };
 use anyhow::anyhow;
@@ -192,10 +192,4 @@ pub fn init() {
     putnfp("raw::fpu::sqrt", sqrt);
     putnfp("raw::fpu::cbrt", cbrt);
     putnfp("raw::f64::to_string", to_str);
-    putstatic("raw::f64::nan", Var::U64(f64::NAN.to_bits()));
-    putstatic("raw::f64::inf", Var::U64(f64::INFINITY.to_bits()));
-    putstatic(
-        "raw::f64::neg_inf",
-        Var::U64(f64::NEG_INFINITY.to_bits()),
-    );
 }

@@ -9,17 +9,17 @@ The following features are provided by euolaVM runtime:
  - Corotines
 
 ## Getting Started
-The `Hello, world!` program in euolaVM (using `ceras`) is:
+The `Hello, world!` program in euolaVM (using a basic wrapper library `system`) is:
 
     |>main
         v 100 U f"Hello, world!"
-        C ceras::stdout::println
+        C system::stdout::println
     <|
 
 Run this program with:
 
     EUOLA_VM_EXECUTE=hello.s \
-    EUOLA_VM_DEPENDENCIES=libstd.s \
+    EUOLA_VM_DEPENDENCIES=libsystem.s \
     ./target/release/euola-vm
 
 The you will see `Hello, world` printed on the console.

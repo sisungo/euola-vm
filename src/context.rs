@@ -13,14 +13,16 @@ use dashmap::DashMap;
 use once_cell::sync::Lazy;
 use std::{cell::RefCell, collections::HashMap};
 
-/// Collection of functions.
+/// Collection of functions. The performance of calling a function is important, so this have
+/// a thread-local cache.
 static FUNCTIONS: Lazy<DashMap<Box<str>, FuncPtr, ahash::RandomState>> =
     Lazy::new(|| DashMap::with_capacity_and_hasher(256, ahash::RandomState::default()));
 /// Handlers when interrupted. If the handler is not set, the executing engine will `Ignore` by
-/// default.
+/// default. Interruptions are cold, so this don't have a thread-local cache.
 static INTERRUPTIONS: Lazy<DashMap<Box<str>, InterruptHandler, ahash::RandomState>> =
     Lazy::new(|| DashMap::with_capacity_and_hasher(16, ahash::RandomState::default()));
-/// Static variable storage.
+/// Static variable storage. Generally, the variables are used to be shared between threads. So
+/// this don't have a thread-local cache.
 static VM_STATIC: Lazy<DashMap<Box<str>, Var, ahash::RandomState>> =
     Lazy::new(|| DashMap::with_capacity_and_hasher(16, ahash::RandomState::default()));
 
@@ -37,6 +39,11 @@ fn sync_cache() -> HashMap<Box<str>, FuncPtr, ahash::RandomState> {
         result.insert(i.key().to_owned(), i.value().to_owned());
     }
     result
+}
+
+#[inline(always)]
+pub fn force_sync_cache() {
+    FUNCTIONS_CACHE.with(|x| *x.borrow_mut() = sync_cache());
 }
 
 /// Context dump.
@@ -64,7 +71,7 @@ pub fn getfp(name: &str) -> Option<FuncPtr> {
         }
     })
 }
-/// Put a function pointer.
+/// Put a function pointer. There won't update the thread-local function cache.
 #[inline(always)]
 pub fn putfp(name: &str, fp: FuncPtr) {
     FUNCTIONS.insert(Box::from(name), fp);

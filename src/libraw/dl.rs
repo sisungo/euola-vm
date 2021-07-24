@@ -19,6 +19,7 @@ pub fn init() {
     putnfp("raw::vhw::dump<context>", dump);
     putnfp("raw::vhw::expand<topsil>", expand);
     putnfp("raw::vhw::hostinfo", os_id);
+    putnfp("raw::vhw::sync_cache", force_sync_cache);
 }
 
 /// Core dump context.
@@ -26,6 +27,12 @@ pub fn dump(a: &mut [Var]) -> Result<(), anyhow::Error> {
     unsafe {
         *a.get_unchecked_mut(0) = Var::UString((&*context::dump()).into());
     }
+    Ok(())
+}
+
+/// Force sync the function cache of current thread.
+pub fn force_sync_cache(_: &mut [Var]) -> Result<(), anyhow::Error> {
+    context::force_sync_cache();
     Ok(())
 }
 
