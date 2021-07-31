@@ -3,7 +3,7 @@
 //!
 
 use crate::{
-    context::{self, getfp, putnfp, Thread},
+    context::{self, getfp, putnfp, Thread, fpatch},
     executor,
     isa::FuncPtr,
     resolver,
@@ -14,12 +14,24 @@ use anyhow::anyhow;
 /// Initialize the library.
 #[inline(always)]
 pub fn init() {
-    putnfp("raw::dl::vload", vload);
+    putnfp("raw::dl::load_file", vload);
+    putnfp("raw::vhw::locate_func", locate_func);
     putnfp("raw::coro::enter", coroenter);
     putnfp("raw::vhw::dump<context>", dump);
     putnfp("raw::vhw::expand<topsil>", expand);
-    putnfp("raw::vhw::hostinfo", os_id);
+    putnfp("raw::info<host>", os_id);
     putnfp("raw::vhw::sync_cache", force_sync_cache);
+    putnfp("raw::vhw::patch_func", patch_func);
+}
+
+/// Patch a function.
+pub fn patch_func(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let origin = unsafe { a.get_unchecked(0) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let patched = unsafe { a.get_unchecked(1) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let origin = origin.borrow()?;
+    let patched = patched.borrow()?;
+    fpatch(&origin[..], &patched[..])?;
+    force_sync_cache(a)
 }
 
 /// Core dump context.
@@ -87,4 +99,15 @@ pub fn coroenter(_: &mut [Var]) -> Result<(), anyhow::Error> {
         }
         _ => Err(anyhow!("raw::fatal::segfault")),
     }
+}
+
+/// Locate a function.
+pub fn locate_func(a: &mut [Var]) -> Result<(), anyhow::Error> {
+    let name_ref = unsafe { a.get_unchecked(0) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let name = name_ref.borrow()?;
+    *(unsafe { a.get_unchecked_mut(0) }) = match getfp(&*name) {
+        Some(_) => Var::UString(name_ref.clone()),
+        None => Var::UString(StringRef::null()),
+    };
+    Ok(())
 }

@@ -31,6 +31,16 @@ std::thread_local! {
     static FUNCTIONS_CACHE: RefCell<HashMap<Box<str>, FuncPtr, ahash::RandomState>> = RefCell::new(sync_cache());
 }
 
+/// Patch functions.
+#[inline(always)]
+pub fn fpatch(origin: &str, patched: &str) -> Result<(), anyhow::Error> {
+    let origin_newname = format!("{}@origin", origin);
+    FUNCTIONS.insert(origin_newname.into_boxed_str(), FUNCTIONS.get(origin).ok_or_else(|| anyhow!("raw::fatal::no_such_func"))?.to_owned());
+    FUNCTIONS.insert(Box::from(origin), FUNCTIONS.get(patched).ok_or_else(|| anyhow!("raw::fatal::no_such_func"))?.to_owned());
+    Ok(())
+}
+
+/// Create a `HashMap` of current global functions for syncing cache.
 #[inline(always)]
 fn sync_cache() -> HashMap<Box<str>, FuncPtr, ahash::RandomState> {
     let mut result =
@@ -41,6 +51,7 @@ fn sync_cache() -> HashMap<Box<str>, FuncPtr, ahash::RandomState> {
     result
 }
 
+/// Sync the cache manually.
 #[inline(always)]
 pub fn force_sync_cache() {
     FUNCTIONS_CACHE.with(|x| *x.borrow_mut() = sync_cache());

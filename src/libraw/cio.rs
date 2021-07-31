@@ -82,7 +82,6 @@ pub fn read_bytes(a: &mut [Var]) -> Result<(), anyhow::Error> {
 }
 
 impl_print!(eprint, stderr);
-impl_flush!(eflush, stderr);
 
 /// Initialize the IO library.
 #[inline(always)]
@@ -91,6 +90,5 @@ pub fn init() {
     putnfp("raw::cio::read<str>", read_str);
     putnfp("raw::cio::read<bytes>", read_bytes);
     putnfp("raw::cio::flush", flush);
-    putnfp("raw::cio::eflush", eflush);
     putnfp("raw::cio::eprint", eprint);
 }
