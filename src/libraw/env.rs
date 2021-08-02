@@ -36,7 +36,7 @@ pub fn init() {
 
 /// Argument count.
 pub fn argc(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    *(unsafe { a.get_unchecked_mut(0) }) = Var::U64(ARGS.len() as u64);
+    *(unsafe { a.get_unchecked_mut(0) }) = Var::U64((ARGS.len() as u64) - 1);
     Ok(())
 }
 
@@ -92,7 +92,7 @@ pub fn argv(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let val = match ARGS.get(
         unsafe { a.get_unchecked(0) }
             .as_usize()
-            .ok_or_else(|| anyhow!("raw::fatal::not_a_ptr"))?,
+            .ok_or_else(|| anyhow!("raw::fatal::not_a_ptr"))? + 1,
     ) {
         Some(x) => x.to_owned().into(),
         None => StringRef::null(),

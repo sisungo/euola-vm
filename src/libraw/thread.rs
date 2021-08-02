@@ -84,7 +84,7 @@ pub fn spawn(a: &mut [Var]) -> Result<(), anyhow::Error> {
             unsafe { std::hint::unreachable_unchecked() }
         }
     }
-    let builder = std::thread::Builder::new().name("<euolaVM User Thread>".to_owned());
+    let builder = std::thread::Builder::new().name("secondary".to_owned());
     drop(args);
     match builder.spawn(move || {
         start(new_thread);

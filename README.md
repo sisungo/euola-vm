@@ -18,9 +18,9 @@ The `Hello, world!` program in euolaVM (using a basic wrapper library `system`) 
 
 Run this program with:
 
-    EUOLA_VM_EXECUTE=hello.s \
-    EUOLA_VM_DEPENDENCIES=libsystem.s \
-    ./target/release/euola-vm
+```
+./target/release/euola-vm hello.s:libsystem.s
+```
 
 The you will see `Hello, world` printed on the console.
 
@@ -34,10 +34,19 @@ The following are plans of this project. Some plans will take a lot of time to i
 
 ## Portability
 The following platforms are tested:
-    x86_64-unknown-linux-musl
+
+```
+x86_64-unknown-linux-musl
+```
 
 The following platforms are successfully built:
-    x86_64-pc-windows-gnu
+
+```
+x86_64-pc-windows-gnu
+```
 
 The following platforms are planned to test:
-    x86_64-unknown-freebsd
+
+```
+x86_64-unknown-freebsd
+```

@@ -515,5 +515,15 @@ C system::proc::exit
 v 100 U f"raw::env::abort"
 v 101 U f"system::patches::abort"
 C raw::vhw::patch_func
+v 100 U f"_start"
+v 101 U f"system::patches::_start"
+C raw::vhw::patch_func
+r
+<|
+|>system::patches::_start
+v 100 U f"\e[31merror: \e[0mfunction `_start` cannot be called inside of `libsystem` runtime."
+C system::stdout::println
+v 100 32 1
+C system::proc::exit
 r
 <|

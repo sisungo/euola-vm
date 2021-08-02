@@ -222,7 +222,7 @@ macro_rules! core_inner {
                 }
             }
             Instruction::Noop => std::hint::spin_loop(),
-        };
+        }
     }
 }
 
@@ -240,7 +240,7 @@ pub fn core(ctx: &mut Thread) -> Result<(), anyhow::Error> {
                 }
             }
         };
-        core_inner!(cur, ctx)
+        core_inner!(cur, ctx);
     }
 }
 

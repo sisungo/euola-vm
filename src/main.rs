@@ -20,25 +20,23 @@ use ansi_term::{
 use std::{env, process::exit};
 
 /// Get environment `EUOLA_VM_EXECUTE`.
-fn getexecenv() -> String {
-    let result = match env::var("EUOLA_VM_EXECUTE") {
-        Ok(x) => x,
-        Err(_) => {
+fn getexec() -> String {
+    let result = match env::args().nth(1) {
+        Some(x) => x,
+        None => {
             eprintln!(
-                "{}environment `EUOLA_VM_EXECUTE` is not set or invalid.",
+                "{}argument No. 1 is not specified or invalid.",
                 Style::new().bold().fg(Red).paint("error: ")
             );
             exit(-1);
         }
     };
-    env::remove_var("EUOLA_VM_EXECUTE");
     result
 }
 
 /// Load dependencies.
-fn loads(v: &str, c: &str) {
-    if let Ok(x) = env::var(v) {
-        for i in x.split(':') {
+fn loadstr(v: &str, c: &str) {
+        for i in v.split(':') {
             if let Err(z) = resolver::resolve(i) {
                 eprintln!(
                     "{}cannot resolve byte code file `{}`(load as a {}): {}",
@@ -49,11 +47,17 @@ fn loads(v: &str, c: &str) {
                 );
             }
         }
+}
+
+/// Load dependencies.
+fn loads(v: &str, c: &str) {
+    if let Ok(x) = env::var(v) {
+        loadstr(&x, c);
     }
 }
 
 /// Get symbol `_start`.
-fn getstart(bf: &str) -> isa::VirtFuncPtr {
+fn getstart() -> isa::VirtFuncPtr {
     use context::getfp;
     use isa::FuncPtr;
 
@@ -61,9 +65,8 @@ fn getstart(bf: &str) -> isa::VirtFuncPtr {
         Some(x) => x,
         None => {
             eprintln!(
-                "{}cannot execute program `{}`: symbol `_start` not found!",
+                "{}cannot execute the program: symbol `_start` not found!",
                 Style::new().bold().fg(Red).paint("error: "),
-                bf
             );
             exit(-1);
         }
@@ -72,9 +75,8 @@ fn getstart(bf: &str) -> isa::VirtFuncPtr {
         FuncPtr::Virtual(x) => x,
         FuncPtr::Native(_) => {
             eprintln!(
-                "{}cannot execute program `{}`: symbol `_start` is not managed!",
+                "{}cannot execute the program: symbol `_start` is not managed!",
                 Style::new().bold().fg(Red).paint("error: "),
-                bf
             );
             exit(-1);
         }
@@ -85,21 +87,11 @@ fn getstart(bf: &str) -> isa::VirtFuncPtr {
 fn main() {
     os::init_minimal();
 
-    let bf = getexecenv();
-    if let Err(x) = resolver::resolve(&bf[..]) {
-        eprintln!(
-            "{}cannot resolve file `{}`: {}",
-            Style::new().bold().fg(Red).paint("error: "),
-            &bf[..],
-            x
-        );
-        exit(-1);
-    }
+    let bf = getexec();
 
-    loads("EUOLA_VM_DEPENDENCIES", "dependency");
-    env::remove_var("EUOLA_VM_DEPENDENCIES");
+    loadstr(&bf, "archive");
     loads("EUOLA_VM_PRELOAD", "preload");
-    let vfp = getstart(&bf);
+    let vfp = getstart();
 
     libraw::init();
     os::init_pre();
