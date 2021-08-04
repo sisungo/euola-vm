@@ -527,3 +527,102 @@ v 100 32 1
 C system::proc::exit
 r
 <|
+|>system::locale::get_config
+v 100 U f"LANG"
+C raw::env::getenv
+? 100 0
+j 0 5
+C system::locale::_id_process
+r
+<|
+|>system::locale::_id_process
+v 101 U f"."
+C raw::str::split
+v 0 33 0
+[ 100 0 1
+D 1 100
+v 101 U f"_"
+v 102 U f"-"
+C raw::str::replace
+r
+<|
+|>system::locale::install
+v 101 U f"r"
+C raw::fs::open
+j 100 8
+D 101 100
+C raw::fs::read_all
+j 100 8
+D 101 100
+C system::locale::_parse
+r
+<|
+|>system::locale::_parse
+C raw::str::from<bytes>
+? 100 0
+j 0 5
+C system::locale::_parse_inner
+r
+v 100 65 18
+r
+<|
+|>system::locale::_parse_inner
+v 101 U f"\n"
+C raw::str::split
+D 100 0
+L 0 1
+C raw::hashmap::new
+D 100 3
+v 2 65 0
+< 2 1 4
+v 5 65 1
+^ 4 1 6
+j 6 17
+[ 0 2 100
+D 3 101
+C system::locale::_parse_line
+v 7 65 1
++ 2 7 2
+J 7
+r
+<|
+|>system::locale::_parse_line
+D 100 0
+D 101 1
+v 101 U f"\0"
+C raw::string::split
+D 1 101
+C system::locale::_parse_line_inner
+r
+<|
+|>system::locale::_parse_line_inner
+D 100 0
+D 101 1
+L 0 2
+v 3 65 1
+v 4 65 0
+= 1 2 4
+j 4 12
+D 1 100
+[ 0 4 101
+[ 0 3 102
+C raw::hashmap::set
+r
+D 1 100
+[ 0 4 101
+d 102 U N
+C raw::hashmap::set
+r
+<|
+|>system::locale::get
+C raw::hashmap::get
+j 100 4
+v 100 U N
+r
+D 101 100
+r
+<|
+|>system::locale::uninstall
+C raw::hashmap::drop
+r
+<|
