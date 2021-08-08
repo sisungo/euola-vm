@@ -80,9 +80,7 @@ pub fn catch_sysint(a: &mut [Var]) -> Result<(), anyhow::Error> {
 
 /// Ctrl-C handler.
 extern "C" fn ctrlc_handler(_: libc::c_int) {
-    executor::start(Thread::new(
-        CTRLC_HANDLER.lock().as_ref().unwrap().clone(),
-    ));
+    executor::start(Thread::new(CTRLC_HANDLER.lock().as_ref().unwrap().clone()));
 }
 
 /// Get argument.
@@ -92,7 +90,8 @@ pub fn argv(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let val = match ARGS.get(
         unsafe { a.get_unchecked(0) }
             .as_usize()
-            .ok_or_else(|| anyhow!("raw::fatal::not_a_ptr"))? + 1,
+            .ok_or_else(|| anyhow!("raw::fatal::not_a_ptr"))?
+            + 1,
     ) {
         Some(x) => x.to_owned().into(),
         None => StringRef::null(),

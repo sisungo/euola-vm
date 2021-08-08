@@ -389,7 +389,8 @@ r
 <|
 |>system::stdin::readline
 ~ raw::coro::yield
-C raw::cio::read<str>
+C raw::cio::read
+C raw::str::from<bytes>
 ~ raw::coro::yield
 r
 <|

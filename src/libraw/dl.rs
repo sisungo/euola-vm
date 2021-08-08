@@ -3,7 +3,7 @@
 //!
 
 use crate::{
-    context::{self, getfp, putnfp, Thread, fpatch},
+    context::{self, fpatch, getfp, putnfp, Thread},
     executor,
     isa::FuncPtr,
     resolver,
@@ -26,8 +26,12 @@ pub fn init() {
 
 /// Patch a function.
 pub fn patch_func(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let origin = unsafe { a.get_unchecked(0) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
-    let patched = unsafe { a.get_unchecked(1) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let origin = unsafe { a.get_unchecked(0) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let patched = unsafe { a.get_unchecked(1) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
     let origin = origin.borrow()?;
     let patched = patched.borrow()?;
     fpatch(&origin[..], &patched[..])?;
@@ -103,7 +107,9 @@ pub fn coroenter(_: &mut [Var]) -> Result<(), anyhow::Error> {
 
 /// Locate a function.
 pub fn locate_func(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let name_ref = unsafe { a.get_unchecked(0) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let name_ref = unsafe { a.get_unchecked(0) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
     let name = name_ref.borrow()?;
     *(unsafe { a.get_unchecked_mut(0) }) = match getfp(&*name) {
         Some(_) => Var::UString(name_ref.clone()),

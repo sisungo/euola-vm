@@ -35,8 +35,16 @@ std::thread_local! {
 #[inline(always)]
 pub fn fpatch(origin: &str, patched: &str) -> Result<(), anyhow::Error> {
     let origin_newname = format!("{}@origin", origin);
-    FUNCTIONS.insert(origin_newname.into_boxed_str(), FUNCTIONS.get(origin).ok_or_else(|| anyhow!("raw::fatal::no_such_func"))?.to_owned());
-    FUNCTIONS.insert(Box::from(origin), FUNCTIONS.get(patched).ok_or_else(|| anyhow!("raw::fatal::no_such_func"))?.to_owned());
+    let oon = FUNCTIONS
+        .get(origin)
+        .ok_or_else(|| anyhow!("raw::fatal::no_such_func"))?
+        .to_owned();
+    FUNCTIONS.insert(origin_newname.into_boxed_str(), oon);
+    let pon = FUNCTIONS
+        .get(patched)
+        .ok_or_else(|| anyhow!("raw::fatal::no_such_func"))?
+        .to_owned();
+    FUNCTIONS.insert(Box::from(origin), pon);
     Ok(())
 }
 

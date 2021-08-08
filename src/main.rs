@@ -19,10 +19,30 @@ use ansi_term::{
 };
 use std::{env, process::exit};
 
+/// Print help message.
+fn help() {
+    println!("usage: euola-vm [-hv] [A:B:C...] [args...]");
+}
+
+/// Print version message.
+fn version() {
+    println!("euola-vm standard edition v{}", env!("CARGO_PKG_VERSION"));
+}
+
 /// Get environment `EUOLA_VM_EXECUTE`.
 fn getexec() -> String {
     let result = match env::args().nth(1) {
-        Some(x) => x,
+        Some(x) => {
+            if let "-h" | "-help" | "--help" = &x[..] {
+                help();
+                exit(0);
+            } else if let "-v" | "-version" | "--version" = &x[..] {
+                version();
+                exit(0);
+            } else {
+                x
+            }
+        }
         None => {
             eprintln!(
                 "{}argument No. 1 is not specified or invalid.",
@@ -36,17 +56,17 @@ fn getexec() -> String {
 
 /// Load dependencies.
 fn loadstr(v: &str, c: &str) {
-        for i in v.split(':') {
-            if let Err(z) = resolver::resolve(i) {
-                eprintln!(
-                    "{}cannot resolve byte code file `{}`(load as a {}): {}",
-                    Style::new().bold().fg(Yellow).paint("warning: "),
-                    i,
-                    c,
-                    z
-                );
-            }
+    for i in v.split(':') {
+        if let Err(z) = resolver::resolve(i) {
+            eprintln!(
+                "{}cannot resolve byte code file `{}`(load as a {}): {}",
+                Style::new().bold().fg(Yellow).paint("warning: "),
+                i,
+                c,
+                z
+            );
         }
+    }
 }
 
 /// Load dependencies.

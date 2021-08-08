@@ -46,7 +46,9 @@ pub fn tls_get(a: &mut [Var]) -> Result<(), anyhow::Error> {
 
 /// Delete a TLS.
 pub fn tls_del(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let name = unsafe { a.get_unchecked(0) }.as_sr().ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
+    let name = unsafe { a.get_unchecked(0) }
+        .as_sr()
+        .ok_or_else(|| anyhow!("raw::fatal::not_a_buf"))?;
     let name = name.borrow()?;
     TLS_MAP.with(|x| x.borrow_mut().remove(&name[..]));
     Ok(())

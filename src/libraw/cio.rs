@@ -60,16 +60,6 @@ macro_rules! impl_flush {
 impl_print!(print, stdout);
 impl_flush!(flush, stdout);
 
-/// Read a line into a UString.
-pub fn read_str(a: &mut [Var]) -> Result<(), anyhow::Error> {
-    let mut buf = String::new();
-    match stdin().read_line(&mut buf).is_ok() {
-        true => unsafe { *a.get_unchecked_mut(0) = Var::UString(buf.into()) },
-        false => unsafe { *a.get_unchecked_mut(0) = Var::UString(StringRef::null()) },
-    }
-    Ok(())
-}
-
 /// Read a line to a Bytes.
 pub fn read_bytes(a: &mut [Var]) -> Result<(), anyhow::Error> {
     let mut buf = Vec::new();
@@ -87,8 +77,7 @@ impl_print!(eprint, stderr);
 #[inline(always)]
 pub fn init() {
     putnfp("raw::cio::print", print);
-    putnfp("raw::cio::read<str>", read_str);
-    putnfp("raw::cio::read<bytes>", read_bytes);
+    putnfp("raw::cio::read", read_bytes);
     putnfp("raw::cio::flush", flush);
     putnfp("raw::cio::eprint", eprint);
 }

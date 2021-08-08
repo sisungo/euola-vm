@@ -4,10 +4,7 @@
 //! `system::f64` module provides high-level abstraction of this library.
 //!
 
-use crate::{
-    context::putnfp,
-    vmem::Var,
-};
+use crate::{context::putnfp, vmem::Var};
 use anyhow::anyhow;
 
 macro_rules! impl_fpcalc {

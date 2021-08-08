@@ -1,6 +1,6 @@
 [package]
 name = "euola-vm"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["sisungo <sisungo@protonmail.com>"]
 edition = "2018"
 
