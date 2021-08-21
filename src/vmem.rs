@@ -592,8 +592,8 @@ impl Var {
             Self::U64(_) => "primitive::u64".to_owned(),
             Self::Usize(_) => "primitive::ptr".to_owned(),
             Self::Bytes(_) => "raw::bytes".to_owned(),
-            Self::UString(_) => "raw::string".to_owned(),
-            Self::Vector(_) => "raw::vector".to_owned(),
+            Self::UString(_) => "raw::str".to_owned(),
+            Self::Vector(_) => "raw::vec".to_owned(),
             Self::Object(x) => match &x.0 {
                 Some(y) => match y.get("type") {
                     Some(z) => match &*z {

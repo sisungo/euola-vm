@@ -627,3 +627,101 @@ r
 C raw::hashmap::drop
 r
 <|
+|>system::hashmap::_ib
+d 0 v n
+D 100 1
+v 2 65 0
+v 3 65 1
+= 2 1 4
+j 4 11
+D 0 100
+d 101 v n
+C raw::vec::push
++ 2 3 2
+J 4
+D 0 100
+r
+<|
+|>system::hashmap::new
+d 0 system::hashmap n
+D 100 1
+D 101 2
+C system::hashmap::_ib
+S 0 storage 100
+S 0 hasher 2
+D 0 100
+r
+<|
+|>system::hashmap::_nkv
+d 0 system::hashmap::kvp n
+S 0 key 100
+S 0 val 101
+D 0 100
+r
+<|
+|>system::hashmap::_add
+D 100 0
+D 101 1
+D 102 2
+G 0 hasher 3
+G 0 storage 4
+D 1 100
+c 3
+L 4 5
+% 100 5 6
+[ 4 6 7
+D 1 100
+D 2 101
+C system::hashmap::_nkv
+D 100 101
+D 7 100
+C raw::vec::push
+r
+<|
+|>system::hashmap::get
+D 100 0
+D 101 1
+G 0 hasher 2
+G 0 storage 3
+D 1 100
+c 2
+L 3 4
+% 100 4 5
+[ 3 5 6
+D 6 100
+D 1 101
+C system::hashmap::_gb
+G 100 val 100
+r
+<|
+|>system::hashmap::_gb
+D 100 0
+D 101 1
+L 0 2
+v 3 65 0
+v 4 65 1
+= 2 3 5
+j 5 16
+[ 0 3 6
+G 6 key 7
+D 7 100
+D 1 101
+C system::hashmap::_eq
+j 100 15
++ 3 4 3
+J 5
+D 6 100
+r
+<|
+|>system::hashmap::_eq
+D 100 0
+D 101 1
+T 0 2
+D 2 100
+v 101 U f"::eq"
+C raw::str::push_str
+D 0 100
+D 101 1
+c 2
+r
+<|
